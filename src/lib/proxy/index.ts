@@ -131,6 +131,12 @@ const headersToForward = (headers: string[]): { [key: string]: string } => {
   return forwardedHeaders
 }
 
+const get_request = (integration: Types.Integration, path: string) => {
+  //Based on "http://localhost:8080/proxy/google-custom/drive/files" return the correct request object as requestConfig
+  const service_name = path.split("/").shift()
+  return integration.requests.filter((d) => d.service == service_name).pop()
+}
+
 async function buildRequest({
   integration,
   path,
@@ -144,7 +150,9 @@ async function buildRequest({
   forwardedHeaders: Record<string, any>
   method: string
 }) {
-  const { request: requestConfig } = integration
+  const requestConfig = integration.requests ? get_request(integration, path) : integration.request
+  path = integration.requests ? path.split("/").slice(1).join("/") : path
+
   try {
     // First interpolation phase with utility headers (prefixed with Pizzly)
     let auth = { ...authentication.payload }
