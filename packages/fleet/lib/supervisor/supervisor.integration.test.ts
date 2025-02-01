@@ -224,12 +224,11 @@ describe('Supervisor', () => {
     });
 
     it('should remove old TERMINATED nodes', async () => {
-        const sevenDaysAgo = new Date(Date.now() - STATE_TIMEOUT_MS.TERMINATED - 1);
         const terminatedNode = await createNodeWithAttributes(dbClient.db, { state: 'TERMINATED', deploymentId: activeDeployment.id });
         const oldTerminatedNode = await createNodeWithAttributes(dbClient.db, {
             state: 'TERMINATED',
             deploymentId: activeDeployment.id,
-            lastStateTransitionAt: sevenDaysAgo
+            lastStateTransitionAt: new Date(Date.now() - STATE_TIMEOUT_MS.TERMINATED - 1)
         });
 
         await supervisor.tick();
@@ -247,12 +246,11 @@ describe('Supervisor', () => {
     });
 
     it('should remove old ERROR nodes', async () => {
-        const sevenDaysAgo = new Date(Date.now() - STATE_TIMEOUT_MS.ERROR - 1);
         const errorNode = await createNodeWithAttributes(dbClient.db, { state: 'ERROR', deploymentId: activeDeployment.id });
         const oldErrorNode = await createNodeWithAttributes(dbClient.db, {
             state: 'ERROR',
             deploymentId: activeDeployment.id,
-            lastStateTransitionAt: sevenDaysAgo
+            lastStateTransitionAt: new Date(Date.now() - STATE_TIMEOUT_MS.ERROR - 1)
         });
 
         await supervisor.tick();
